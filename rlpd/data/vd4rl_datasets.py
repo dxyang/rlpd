@@ -12,6 +12,10 @@ from rlpd.data import MemoryEfficientReplayBuffer
 
 VD4RL_DIR = "~/.vd4rl"
 
+import sys
+sys.path.append("/home/dxyang/code/rewardlearning-vid")
+from reward_extraction.data import H5PyTrajDset
+
 
 def get_dataset_dir(env, dataset_level, dataset_path):
     env_name = env.unwrapped.spec.id
@@ -77,6 +81,45 @@ def wrap(env):
     )
 
 
+class VMetaworldDataset(MemoryEfficientReplayBuffer):
+    def __init__(
+        self,
+        env: gym.Env,
+        pixel_keys: tuple = ("pixels",),
+        capacity: int = 500_000,
+        dataset_path: str = None,
+    ):
+        super().__init__(
+            env.observation_space,
+            env.action_space,
+            capacity=capacity,
+            pixel_keys=pixel_keys,
+        )
+        self.expert_data_ptr = H5PyTrajDset(dataset_path, read_only_if_exists=True)
+        expert_data = [d for d in self.expert_data_ptr]
+
+        counter = 0
+        for traj in expert_data:
+            for i in range(len(traj[1])):
+                curr_frame = np.expand_dims(np.transpose(traj[0][i], (1, 2, 0)), axis=-1)
+                next_frame = np.expand_dims(np.transpose(traj[0][i + 1], (1, 2, 0)), axis=-1)
+
+                data_dict = dict(
+                    observations={"pixels": curr_frame},
+                    actions=traj[1][i],
+                    rewards=traj[2][i],
+                    masks=1.0,
+                    dones=0.0,
+                    next_observations={"pixels": next_frame},
+                )
+                self.insert(data_dict)
+                counter += 1
+
+    def update_rewards(self, rewards):
+        pass
+
+
+
 class VD4RLDataset(MemoryEfficientReplayBuffer):
     def __init__(
         self,
@@ -86,13 +129,13 @@ class VD4RLDataset(MemoryEfficientReplayBuffer):
         capacity: int = 500_000,
         dataset_path: Optional[str] = None,
     ):
-
         super().__init__(
             env.observation_space,
             env.action_space,
             capacity=capacity,
             pixel_keys=pixel_keys,
         )
+
         dataset_dir = get_dataset_dir(env, dataset_level, dataset_path)
         dataset_dict = load_episodes(dataset_dir, keep_temporal_order=True)
         framestack = env.observation_space[pixel_keys[0]].shape[-1]
