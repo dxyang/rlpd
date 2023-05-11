@@ -1,5 +1,6 @@
 # experiment directory
 s42_*
+metaworld_pixels
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
