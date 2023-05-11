@@ -12,8 +12,6 @@ from rlpd.data import MemoryEfficientReplayBuffer
 
 VD4RL_DIR = "~/.vd4rl"
 
-import sys
-sys.path.append("/home/dxyang/code/rewardlearning-vid")
 from reward_extraction.data import H5PyTrajDset
 
 

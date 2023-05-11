@@ -23,8 +23,6 @@ from rlpd.data.vd4rl_datasets import VD4RLDataset, VMetaworldDataset
 from rlpd.evaluation import evaluate
 from rlpd.wrappers import WANDBVideo, wrap_pixels
 
-import sys
-sys.path.append("/home/dxyang/code/rewardlearning-vid")
 from policy_learning.envs import (
     ImageMetaworldEnv,
     ImageOnlineCustomRewardMetaworldEnv,
@@ -121,9 +119,9 @@ def main(_):
     env_str = "reach"
 
     if FLAGS.skip_relabel_rewards:
-        exp_str = f"metaworld_pixels/{date_str}/{env_str}-{exp_substr}-noRelabel"
+        exp_str = f"rlpd/metaworld_pixels/{date_str}/{env_str}-{exp_substr}-noRelabel"
     else:
-        exp_str = f"metaworld_pixels/{date_str}/{env_str}-{exp_substr}-lrfUpdate{FLAGS.lrf_train_steps}Every{FLAGS.lrf_update_frequency}"
+        exp_str = f"rlpd/metaworld_pixels/{date_str}/{env_str}-{exp_substr}-lrfUpdate{FLAGS.lrf_train_steps}Every{FLAGS.lrf_update_frequency}"
 
     log_dir = os.path.join(FLAGS.log_dir, exp_str)
     os.makedirs(log_dir, exist_ok=True)

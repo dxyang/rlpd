@@ -4,8 +4,6 @@ import numpy as np
 
 from rlpd.data.dataset import Dataset
 
-import sys
-sys.path.append("/home/dxyang/code/rewardlearning-vid")
 from reward_extraction.data import H5PyTrajDset
 
 class MetaworldDataset(Dataset):

@@ -6,8 +6,6 @@ import numpy as np
 from rlpd.wrappers.wandb_video import WANDBVideo
 
 
-import sys
-sys.path.append("/home/dxyang/code/rewardlearning-vid")
 from drqv2.video import TrainVideoRecorder
 
 def evaluate(
