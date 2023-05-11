@@ -32,7 +32,7 @@ from rlpd.wrappers import wrap_gym
 import sys
 sys.path.append("/home/dxyang/code/rewardlearning-vid")
 from policy_learning.envs import (
-    # ImageMetaworldEnv,
+    ImageMetaworldEnv,
     # ImageOnlineCustomRewardMetaworldEnv,
     LowDimMetaworldEnv,
     # LowDimOnlineCustomRewardMetaworldEnv,
@@ -63,6 +63,16 @@ flags.DEFINE_boolean(
     "checkpoint_buffer", False, "Save agent replay buffer on evaluation."
 )
 flags.DEFINE_integer("utd_ratio", 1, "Update to data ratio.")
+
+# added options by dxy
+flags.DEFINE_boolean("use_lrf", False, "Use a learned reward function (by default ranking + classifier)")
+flags.DEFINE_boolean("rl_on_images", False, "If we should use lowdim or image state spaces for environments")
+
+# flags.DEFINE_integer("train_gail", False, "GAIL style reward function (just classifier)")
+# flags.DEFINE_integer("train_airl", False, "AIRL style reward function (classifier rescaled)")
+# flags.DEFINE_integer("train_vice", False, "VICE style reward function (just success state classifier)")
+# flags.DEFINE_integer("train_soil", False, "state only imitation learning (inverse dynamics learned from interaction)")
+
 
 config_flags.DEFINE_config_file(
     "config",
@@ -113,7 +123,12 @@ def main(_):
     env_str = "push"
 
     dmc_env = LowDimMetaworldEnv(env_str)
+
+    import pdb; pdb.set_trace()
     env = DMCWrapper(dmc_env)
+
+    import pdb; pdb.set_trace()
+
     env = wrap_gym(env, rescale_actions=True)
     env = gym.wrappers.RecordEpisodeStatistics(env, deque_size=1)
     env.seed(FLAGS.seed)
